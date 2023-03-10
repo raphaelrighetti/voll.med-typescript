@@ -6,24 +6,29 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { domInjector } from "../decorators/dom-injector.js";
 import { Login } from "../models/login/login.js";
+import { TokenView } from "../views/token-view.js";
 export class LoginController {
+    constructor() {
+        this.tokenView = new TokenView();
+    }
     logar() {
         const login = new Login(this.emailInput.value, this.senhaInput.value);
+        let token = "Token não encontrado";
         fetch("http://localhost:8083/login", {
             method: "POST",
-            mode: "cors",
-            cache: "no-cache",
-            credentials: "same-origin",
             headers: {
                 "Content-Type": "application/json",
             },
-            redirect: "follow",
-            referrerPolicy: "no-referrer",
             body: JSON.stringify(login),
         })
             .then(res => res.json())
-            .then(data => console.log(data))
-            .catch(e => console.log(e));
+            .then((data) => {
+            this.tokenView.update(data.token);
+        })
+            .catch(e => {
+            console.log(e);
+            this.tokenView.update("Falha no login.");
+        });
     }
 }
 __decorate([
